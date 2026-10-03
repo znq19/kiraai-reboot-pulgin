@@ -5,7 +5,7 @@
     "collapsed": false,
     "fields": {
       "clear_mode": {
-        "type": "enum",
+        "type": "string",
         "name": "清空方式",
         "options": ["memory_only", "delete_session"],
         "default": "memory_only",
@@ -111,7 +111,7 @@
         "hint": "开启后，重置上下文前会先把被清空的历史压缩成摘要写回新上下文，避免彻底失忆。默认关闭。"
       },
       "summarize_mode": {
-        "type": "enum",
+        "type": "string",
         "name": "摘要模式",
         "options": ["async", "sync"],
         "default": "async",
@@ -194,7 +194,7 @@
   },
   "section_compat": {
     "type": "section",
-    "name": "兼容",
+    "name": "兼容与调试",
     "collapsed": true,
     "fields": {
       "ads_interop": {
@@ -208,6 +208,12 @@
         "name": "检测到其它记忆插件时告警",
         "default": true,
         "hint": "加载时检测同样会改写会话记忆的插件（ADS / CCS / KSM），仅打印告警，不会启用或禁用它们。"
+      },
+      "verbose_log": {
+        "type": "switch",
+        "name": "详细日志",
+        "default": false,
+        "hint": "输出重置流程、关键词命中与兼容检测的详细日志（排查用）。从 1.x 升级时会自动继承旧版的「详细日志」开关。"
       }
     }
   }

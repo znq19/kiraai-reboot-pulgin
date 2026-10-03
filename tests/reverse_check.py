@@ -136,11 +136,55 @@ MUTATIONS = [
         "test_every_config_item_has_a_hint",
     ),
     (
-        "legacy-config-migration-removed",
+        "legacy-keyword-not-migrated",
         "main.py",
-        "        if legacy_prefix:\n            reboot_commands = _legacy(",
-        "        if False:\n            reboot_commands = _legacy(",
+        '                cmd["reboot_commands"] = legacy_commands\n',
+        '                pass  # MUTATION\n',
         "test_legacy_command_prefix_is_migrated",
+    ),
+    (
+        "legacy-command-not-re-enabled-on-upgrade",
+        "main.py",
+        '            if not cmd.get("enable_reboot_command", False):\n'
+        '                cmd["enable_reboot_command"] = True',
+        '            if not cmd.get("enable_reboot_command", False):\n'
+        '                cmd["enable_reboot_command"] = False  # MUTATION',
+        "test_legacy_command_prefix_is_migrated",
+    ),
+    (
+        "fresh-install-command-auto-enabled",
+        "main.py",
+        "        if not self.enable_reboot_command and legacy_commands:",
+        "        if not self.enable_reboot_command:  # MUTATION",
+        "test_a_fresh_install_keeps_the_command_off",
+    ),
+    (
+        "runtime-legacy-fallback-removed",
+        "main.py",
+        "        if not self.enable_reboot_command and legacy_commands:",
+        "        if False:  # MUTATION",
+        "test_legacy_values_are_honoured_without_a_writable_config",
+    ),
+    (
+        "migration-not-persisted",
+        "main.py",
+        "                persisted = self._persist_config(cfg)",
+        "                persisted = False  # MUTATION",
+        "test_migration_is_written_back_to_the_config_file",
+    ),
+    (
+        "legacy-keys-not-deleted",
+        "main.py",
+        '        legacy_commands = _split_commands(cfg.pop("command_prefix"))',
+        '        legacy_commands = _split_commands(cfg.get("command_prefix"))  # MUTATION',
+        "test_migration_is_idempotent",
+    ),
+    (
+        "folded-section-not-removed",
+        "main.py",
+        "        node = cfg.pop(legacy_section, None)",
+        "        node = cfg.get(legacy_section)  # MUTATION",
+        "test_a_short_lived_debug_section_is_folded_into_compat",
     ),
 ]
 

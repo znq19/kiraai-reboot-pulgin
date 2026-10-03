@@ -1,7 +1,7 @@
 {
     "display_name": "Context Reboot",
     "plugin_id": "reboot_plugin",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "author": "luochenYukitsune / znq19",
     "description": "重置会话上下文，可选同时总结，支持命令与自然语言、bot自主调用。",
     "core_version": ">=2.33",
