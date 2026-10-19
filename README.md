@@ -200,6 +200,12 @@ data/plugins/reboot_plugin/
 <details>
 <summary>点击展开历史版本</summary>
 
+### v2.1.4
+
+- **异步摘要写回先等框架写锁再读**：3.0 的 `update_session` 是整段替换，先等 `_write_lock` 释放再读，避免读到 `update_memory` 提交前的旧快照；头部校验/重试逻辑不变。
+- 2.x 无 `_write_lock`，行为不变。
+- 测试保持 127 passed。
+
 ### v2.1.3
 
 - **摘要头识别改为全量扫描**：摘要不一定在 `messages[0]`（KSM 合并视图会重排，旧版 KSM 还会加 `[session:]` 前缀）。现在扫描请求消息，找到 marker 就认领；KSM + reboot 同装时不再重复注入旧摘要。

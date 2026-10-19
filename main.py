@@ -1262,6 +1262,17 @@ class RebootPlugin(BasePlugin):
 
         self._async_tasks[sid] = asyncio.create_task(_run())
 
+    async def _wait_framework_write_lock(self) -> None:
+        """等框架当前正在进行的会话写入结束（3.0 有 _write_lock；2.x 无操作）。"""
+        lock = getattr(self.session_mgr, "_write_lock", None)
+        if lock is None:
+            return
+        try:
+            async with lock:
+                pass
+        except Exception:
+            pass
+
     async def _apply_summary(self, sid: str, expected_base: str, final: str):
         """Replace the summary head.
 
@@ -1276,6 +1287,9 @@ class RebootPlugin(BasePlugin):
         sm = self.session_mgr
         if sm is None:
             return (False, "")
+        # 3.0：先等框架当前写入结束再读，避免读到 update_memory 提交前的旧快照。
+        # 剩余「读→写」窗口与框架自身同级；头部校验仍由调用方重试兜底。
+        await self._wait_framework_write_lock()
         chunks = await self._sm_read_chunks(sid)
         head_now = ""
         if chunks and is_summary_chunk(chunks[0]):
